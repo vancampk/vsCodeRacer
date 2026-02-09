@@ -176,6 +176,18 @@ export const useStatsStore = defineStore('stats', () => {
       correctCharacters: sessionStats.correctCharacters || 0
     }
     
+    // Check for duplicates by timestamp (to the minute) and WPM
+    const sessionMinute = Math.floor(session.timestamp / 60000) // Convert to minutes
+    const isDuplicate = sessionHistory.value.some(existingSession => {
+      const existingMinute = Math.floor(existingSession.timestamp / 60000)
+      return existingMinute === sessionMinute && existingSession.wpm === session.wpm
+    })
+    
+    // Skip if duplicate
+    if (isDuplicate) {
+      return
+    }
+    
     // Save as last game
     lastGameStats.value = session
     
@@ -230,7 +242,25 @@ export const useStatsStore = defineStore('stats', () => {
     if (saved) {
       try {
         const data = JSON.parse(saved)
-        sessionHistory.value = data.sessionHistory || []
+        
+        // Load session history and remove duplicates
+        let sessions = data.sessionHistory || []
+        
+        // Remove duplicates based on timestamp (to the minute) and WPM
+        const uniqueSessions = []
+        const seenKeys = new Set()
+        
+        for (const session of sessions) {
+          const sessionMinute = Math.floor(session.timestamp / 60000)
+          const key = `${sessionMinute}-${session.wpm}`
+          
+          if (!seenKeys.has(key)) {
+            seenKeys.add(key)
+            uniqueSessions.push(session)
+          }
+        }
+        
+        sessionHistory.value = uniqueSessions
         lastGameStats.value = data.lastGameStats || null
         bestWPM.value = data.bestWPM || 0
         bestAccuracy.value = data.bestAccuracy || 0
@@ -240,6 +270,11 @@ export const useStatsStore = defineStore('stats', () => {
         lifetimeTotalTime.value = data.lifetimeTotalTime || 0
         lifetimeTotalCharacters.value = data.lifetimeTotalCharacters || 0
         lifetimeCorrectCharacters.value = data.lifetimeCorrectCharacters || 0
+        
+        // Save back to localStorage if duplicates were removed
+        if (uniqueSessions.length !== sessions.length) {
+          saveHistoryToLocalStorage()
+        }
       } catch (e) {
         console.warn('Failed to load stats history:', e)
       }

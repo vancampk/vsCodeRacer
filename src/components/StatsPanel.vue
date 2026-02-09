@@ -78,6 +78,7 @@
           <table>
             <thead>
               <tr>
+                <th>Session</th>
                 <th>Date</th>
                 <th>WPM</th>
                 <th>Accuracy</th>
@@ -88,6 +89,7 @@
             </thead>
             <tbody>
               <tr v-for="(session, index) in statsStore.sessionHistory" :key="index">
+                <td>#{{ statsStore.totalSessionsPlayed - index }}</td>
                 <td>{{ formatDate(session.timestamp) }}</td>
                 <td>{{ session.wpm }}</td>
                 <td>{{ session.accuracy }}%</td>
