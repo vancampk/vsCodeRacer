@@ -300,8 +300,8 @@ const formatTime = (seconds) => {
 
 <style scoped>
 .stats-panel {
-  width: 100%;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   background: var(--editor-background);
   color: var(--text-color);
   overflow-y: auto;
@@ -464,19 +464,19 @@ tbody tr:hover {
 
 /* Scrollbar Styling */
 .stats-panel::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 .stats-panel::-webkit-scrollbar-track {
-  background: var(--scrollbar-track);
+  background: var(--bg-secondary);
 }
 
 .stats-panel::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 5px;
+  background: var(--bg-tertiary);
+  border-radius: 6px;
 }
 
 .stats-panel::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover);
+  background: var(--text-secondary);
 }
 </style>

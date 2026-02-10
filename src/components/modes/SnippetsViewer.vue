@@ -29,14 +29,17 @@ const snippetLines = computed(() => {
 
 <style scoped>
 .snippets-viewer {
-  height: 100%;
-  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   background: var(--vscode-editor-background);
   text-align: left;
 }
 
 .snippets-editor {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
   font-size: 14px;
@@ -85,15 +88,15 @@ const snippetLines = computed(() => {
 }
 
 .snippets-editor::-webkit-scrollbar-track {
-  background: var(--vscode-scrollbar-shadow);
+  background: var(--bg-secondary);
 }
 
 .snippets-editor::-webkit-scrollbar-thumb {
-  background: var(--vscode-scrollbarSlider-background);
+  background: var(--bg-tertiary);
   border-radius: 6px;
 }
 
 .snippets-editor::-webkit-scrollbar-thumb:hover {
-  background: var(--vscode-scrollbarSlider-hoverBackground);
+  background: var(--text-secondary);
 }
 </style>

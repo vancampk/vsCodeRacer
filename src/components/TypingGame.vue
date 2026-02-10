@@ -1,303 +1,62 @@
 <template>
   <v-app class="typing-game" @click="handleGameClick">
     <!-- VS Code Title Bar -->
-    <div class="title-bar">
-      <div class="title-bar-left">
-        <GlitchLogo />
-      </div>
-      
-      <div class="title-bar-center">
-        
-      </div>
-      
-      <div class="title-bar-right">
-       <GameControls 
-          @save-and-reset="saveAndReset" 
-        />
-      </div>
-    </div>
+    <TitleBar @save-and-reset="saveAndReset" />
     
     <div class="vscode-layout">
       <!-- Activity Bar (left side) -->
-      <div class="activity-bar">
-        <div class="activity-icons">
-          <div class="activity-icon" :class="{ active: activePanel === 'explorer' }" @click="togglePanel('explorer')">
-            <v-icon size="32">mdi-folder-outline</v-icon>
-          </div>
-          <div class="activity-icon" :class="{ active: activePanel === 'search' }" @click="togglePanel('search')">
-            <v-icon size="32">mdi-magnify</v-icon>
-          </div>
-          <div class="activity-icon" :class="{ active: activePanel === 'git' }" @click="togglePanel('git')">
-            <v-icon size="32">mdi-source-branch</v-icon>
-          </div>
-          <div class="activity-icon" :class="{ active: gameMode === 'stats' }" @click="openTab('stats')">
-            <v-icon size="32">mdi-chart-box-outline</v-icon>
-          </div>
-        </div>
-        <div class="activity-logo settings-icon" @click="openTab('settings')">
-          <v-icon size="32" color="primary" :class="{ active: gameMode === 'settings' }">mdi-cog-outline</v-icon>
-          <span class="settings-badge"></span>
-        </div>
-      </div>
+      <ActivityBar 
+        :active-panel="activePanel"
+        :game-mode="gameMode"
+        @toggle-panel="togglePanel"
+        @open-tab="openTab"
+      />
       
       <!-- Side Panel -->
-      <div class="side-panel" v-show="activePanel">
-        <!-- File Explorer -->
-        <div v-if="activePanel === 'explorer'" class="panel-content">
-          <div class="panel-header">
-            <span class="panel-title">CODERACER MODES</span>
-            <v-icon size="16" @click="activePanel = null">mdi-close</v-icon>
-          </div>
-          <div class="file-tree">
-            <div class="file-item" :class="{ active: gameMode === 'free' }" @click="openTab('free')">
-              <v-icon size="16" class="file-icon">{{ getLanguageIcon(settingsStore.languagePreference === 'all' ? currentLanguage.language : settingsStore.languagePreference) }}</v-icon>
-              <span>FreeCode.{{ getLanguageExtension(settingsStore.languagePreference === 'all' ? currentLanguage.language : settingsStore.languagePreference) }}</span>
-            </div>
-            <div class="file-item" :class="{ active: gameMode === 'sprint' }" @click="openTab('sprint')">
-              <v-icon size="16" class="file-icon">{{ getLanguageIcon(settingsStore.languagePreference === 'all' ? currentLanguage.language : settingsStore.languagePreference) }}</v-icon>
-              <span>Sprint10.{{ getLanguageExtension(settingsStore.languagePreference === 'all' ? currentLanguage.language : settingsStore.languagePreference) }}</span>
-            </div>
-            <div class="file-item" :class="{ active: gameMode === 'challenge' }" @click="openTab('challenge')">
-              <v-icon size="16" class="file-icon">mdi-language-python</v-icon>
-              <span>Challenge60s.py</span>
-            </div>
-            <div class="file-separator"></div>
-            <div class="file-item" :class="{ active: gameMode === 'snippets' }" @click="openTab('snippets')">
-              <v-icon size="16" class="file-icon">mdi-code-braces</v-icon>
-              <span>Snippets.md</span>
-            </div>
-            <div class="file-separator"></div>
-            <div class="file-item" :class="{ active: gameMode === 'instructions' }" @click="openTab('instructions')">
-              <v-icon size="16" class="file-icon">mdi-information-outline</v-icon>
-              <span>README.md</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Search Panel -->
-        <div v-if="activePanel === 'search'" class="panel-content">
-          <div class="panel-header">
-            <span class="panel-title">SEARCH OPTIONS</span>
-            <v-icon size="16" @click="activePanel = null">mdi-close</v-icon>
-          </div>
-          <div class="search-content">
-            <div class="search-option" @click="openTab('free')">
-              <v-icon size="16">mdi-code-tags</v-icon>
-              <div class="search-text">
-                <div class="search-title">Free Practice</div>
-                <div class="search-desc">Unlimited coding practice</div>
-              </div>
-            </div>
-            <div class="search-option" @click="openTab('sprint')">
-              <v-icon size="16">mdi-timer</v-icon>
-              <div class="search-text">
-                <div class="search-title">Sprint Mode</div>
-                <div class="search-desc">Complete 10 lines quickly</div>
-              </div>
-            </div>
-            <div class="search-option" @click="openTab('challenge')">
-              <v-icon size="16">mdi-trophy</v-icon>
-              <div class="search-text">
-                <div class="search-title">60s Challenge</div>
-                <div class="search-desc">Race against time</div>
-              </div>
-            </div>
-            <div class="search-divider"></div>
-            <div class="search-option" @click="openTab('snippets')">
-              <v-icon size="16">mdi-code-braces</v-icon>
-              <div class="search-text">
-                <div class="search-title">All Code Snippets</div>
-                <div class="search-desc">Browse all available code snippets</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Git Panel -->
-        <div v-if="activePanel === 'git'" class="panel-content">
-          <div class="panel-header">
-            <span class="panel-title">GAME STATS</span>
-            <v-icon size="16" @click="activePanel = null">mdi-close</v-icon>
-          </div>
-          <div class="git-content">
-            <!-- Current Session Stats -->
-            <div class="stats-section-title">Current Session</div>
-            <div class="stat-line">
-              <v-icon size="16" color="success">mdi-target</v-icon>
-              <span>Accuracy: {{ accuracy }}%</span>
-            </div>
-            <div class="stat-line">
-              <v-icon size="16" color="info">mdi-code-tags</v-icon>
-              <span>LOC/min: {{ locPerMinute }}</span>
-            </div>
-            <div class="stat-line">
-              <v-icon size="16" color="warning">mdi-clock</v-icon>
-              <span>Time: {{ formatTime(timeElapsed) }}</span>
-            </div>
-            <div class="stat-line">
-              <v-icon size="16">mdi-format-list-numbered</v-icon>
-              <span>Lines: {{ wordsCompleted }}</span>
-            </div>
-            
-            <!-- Last Game Stats -->
-            <div>
-              <div class="stats-section-title">Last Game</div>
-              <div class="stat-line" v-if="statsStore.lastGameStats">
-                <v-icon size="16" color="info">mdi-speedometer</v-icon>
-                <span>WPM: {{ statsStore.lastGameStats.wpm }}</span>
-              </div>
-              <div class="stat-line" v-if="statsStore.lastGameStats">
-                <v-icon size="16" color="success">mdi-target</v-icon>
-                <span>Accuracy: {{ statsStore.lastGameStats.accuracy }}%</span>
-              </div>
-              <div class="stat-line" v-if="statsStore.lastGameStats">
-                <v-icon size="16" color="info">mdi-code-tags</v-icon>
-                <span>LOC/min: {{ statsStore.lastGameStats.locPerMinute }}</span>
-              </div>
-              <div class="stat-line" v-if="statsStore.lastGameStats">
-                <v-icon size="16">mdi-format-list-numbered</v-icon>
-                <span>Lines: {{ statsStore.lastGameStats.linesCompleted }}</span>
-              </div>
-              <div class="stat-line" v-if="statsStore.lastGameStats">
-                <v-icon size="16" color="warning">mdi-clock</v-icon>
-                <span>Time: {{ formatTime(statsStore.lastGameStats.timeElapsed) }}</span>
-              </div>
-              <div class="stat-line" v-if="!statsStore.lastGameStats">
-                <span style="color: var(--text-secondary); font-style: italic;">No games played yet</span>
-              </div>
-            </div>
-            
-            <!-- Rolling Averages -->
-            <div>
-              <div class="stats-section-title">Rolling Average (Last {{ Math.min(statsStore.sessionHistory.length || 0, 10) }})</div>
-              <div class="stat-line">
-                <v-icon size="16" color="info">mdi-chart-line</v-icon>
-                <span>Avg WPM: {{ statsStore.averageWPM || 0 }}</span>
-              </div>
-              <div class="stat-line">
-                <v-icon size="16" color="info">mdi-code-tags</v-icon>
-                <span>Avg LOC/min: {{ statsStore.averageLOCPerMinute || 0 }}</span>
-              </div>
-              <div class="stat-line">
-                <v-icon size="16" color="success">mdi-target</v-icon>
-                <span>Avg Accuracy: {{ statsStore.averageAccuracy || 0 }}%</span>
-              </div>
-              <div class="stat-line">
-                <v-icon size="16" :color="statsStore.consistencyScore >= 80 ? 'success' : 'info'">mdi-chart-bell-curve</v-icon>
-                <span>Consistency: {{ statsStore.consistencyScore || 0 }}%</span>
-              </div>
-            </div>
-            
-            <!-- Personal Best -->
-            <div>
-              <div class="stats-section-title">Personal Best</div>
-              <div class="stat-line">
-                <v-icon size="16" color="warning">mdi-trophy</v-icon>
-                <span>Best WPM: {{ statsStore.bestWPM || 0 }}</span>
-              </div>
-              <div class="stat-line">
-                <v-icon size="16" color="warning">mdi-trophy</v-icon>
-                <span>Best LOC/min: {{ statsStore.bestLOCPerMinute || 0 }}</span>
-              </div>
-              <div class="stat-line">
-                <v-icon size="16" color="warning">mdi-trophy</v-icon>
-                <span>Best Accuracy: {{ statsStore.bestAccuracy || 0 }}%</span>
-              </div>
-            </div>
-            
-            <!-- Lifetime Stats -->
-            <div>
-              <div class="stats-section-title">Lifetime Totals</div>
-              <div class="stat-line">
-                <v-icon size="16" color="primary">mdi-infinity</v-icon>
-                <span>Total Lines: {{ (statsStore.lifetimeLinesCompleted || 0).toLocaleString() }}</span>
-              </div>
-              <div class="stat-line">
-                <v-icon size="16" color="primary">mdi-clock-outline</v-icon>
-                <span>Total Time: {{ formatTime(statsStore.lifetimeTotalTime || 0) }}</span>
-              </div>
-              <div class="stat-line">
-                <v-icon size="16" color="primary">mdi-keyboard</v-icon>
-                <span>Total Chars: {{ (statsStore.lifetimeTotalCharacters || 0).toLocaleString() }}</span>
-              </div>
-              <div class="stat-line">
-                <v-icon size="16" color="success">mdi-target</v-icon>
-                <span>Lifetime Accuracy: {{ statsStore.lifetimeAccuracy || 0 }}%</span>
-              </div>
-              <div class="stat-line">
-                <v-icon size="16" color="info">mdi-code-tags</v-icon>
-                <span>Lifetime LOC/min: {{ statsStore.lifetimeAverageLOCPerMinute || 0 }}</span>
-              </div>
-            </div>
-            
-            <!-- Overall Stats -->
-            <div>
-              <div class="stats-section-title">Overall</div>
-              <div class="stat-line">
-                <v-icon size="16">mdi-chart-box</v-icon>
-                <span>Total Sessions: {{ statsStore.totalSessionsPlayed || 0 }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <SidePanel 
+        :active-panel="activePanel"
+        :instructions-open="instructionsOpen"
+        :accuracy="accuracy"
+        :loc-per-minute="locPerMinute"
+        :time-elapsed="timeElapsed"
+        :words-completed="wordsCompleted"
+        @close="activePanel = null"
+        @update:instructions-open="instructionsOpen = $event"
+        @open-tab="openTab"
+      />
       
       <!-- Main Editor Area -->
       <div class="editor-container">
         <!-- Tab Bar -->
-        <div class="tab-bar">
-          <div class="tab-left">
-            <!-- Multiple Tabs -->
-            <div class="tab-container">
-              <div 
-                v-for="(tab, index) in openTabs" 
-                :key="tab.id"
-                class="file-tab"
-                :class="{ 
-                  active: activeTabIndex === index,
-                  'drag-over': dragOverTabIndex === index && draggedTabIndex !== index
-                }"
-                draggable="true"
-                @dragstart="handleDragStart(index, $event)"
-                @dragend="handleDragEnd($event)"
-                @dragover="handleDragOver(index, $event)"
-                @dragenter="handleDragEnter(index)"
-                @dragleave="handleDragLeave()"
-                @drop="handleDrop(index, $event)"
-                @click="switchToTab(index)"
-              >
-                <v-icon size="16" class="file-type-icon">{{ getFileIconForMode(tab.mode) }}</v-icon>
-                <span class="tab-filename">{{ getFileNameForMode(tab.mode) }}</span>
-                <v-icon 
-                  size="14" 
-                  class="tab-close" 
-                  @click.stop="closeTab(index)"
-                >mdi-close</v-icon>
-              </div>
-              <!-- Drop zone at the end -->
-              <div 
-                v-if="openTabs.length > 0"
-                class="tab-drop-zone"
-                :class="{ 'drag-over': dragOverTabIndex === openTabs.length }"
-                @dragover="handleDragOver(openTabs.length, $event)"
-                @dragenter="handleDragEnter(openTabs.length)"
-                @dragleave="handleDragLeave()"
-                @drop="handleDrop(openTabs.length, $event)"
-              ></div>
-            </div>
-            
-            <!-- Empty state when no tabs -->
-            <div class="empty-tab" v-if="openTabs.length === 0">
-              <span class="empty-text">No file open</span>
-            </div>
-          </div>
-          <div class="tab-actions">
-            <v-icon size="16" class="panel-toggle" @click="showBottomPanel = !showBottomPanel">mdi-terminal</v-icon>
-          </div>
-        </div>
+        <TabsBar
+          :open-tabs="openTabs"
+          :active-tab-index="activeTabIndex"
+          :dragged-tab-index="draggedTabIndex"
+          :drag-over-tab-index="dragOverTabIndex"
+          @drag-start="handleDragStart"
+          @drag-end="handleDragEnd"
+          @drag-over="handleDragOver"
+          @drag-enter="handleDragEnter"
+          @drag-leave="handleDragLeave"
+          @drop="handleDrop"
+          @switch-tab="switchToTab"
+          @close-tab="closeTab"
+          @toggle-bottom-panel="showBottomPanel = !showBottomPanel"
+        />
         
         <!-- Editor Content -->
-        <div class="editor-content" v-if="gameMode && openTabs.length > 0">
+        <EditorArea
+          :has-open-tabs="openTabs.length > 0"
+          :show-bottom-panel="showBottomPanel"
+          :current-w-p-m="locPerMinute"
+          :accuracy="accuracy"
+          :lines-completed="wordsCompleted"
+          :time-elapsed="gameStore.timer"
+          :game-mode="gameMode"
+          :average-wpm="statsStore.averageWPM"
+          @open-explorer="togglePanel('explorer')"
+          @close-bottom-panel="showBottomPanel = false"
+        >
           <!-- Stats Panel in Main Editor -->
           <StatsPanel v-if="gameMode === 'stats'" @close="closeActiveTab" />
           
@@ -305,74 +64,16 @@
           <SettingsPanel v-if="gameMode === 'settings'" @close="closeActiveTab" />
           
           <!-- Instructions Panel in Main Editor -->
-          <InstructionsPanel v-if="gameMode === 'instructions'" />
+          <InstructionsPanel v-if="gameMode === 'instructions'" @close="closeActiveTab" />
           
-          <!-- Dynamic Component Based on Game Mode -->
-          <component 
-            v-else-if="currentModeComponent"
-            :is="currentModeComponent"
-            :key="gameStore.resetCounter"
-          />
-        </div>
-        
-        <!-- Empty State -->
-        <div class="editor-content empty-editor" v-else>
-          <div class="empty-state">
-            <v-icon size="48" color="secondary">mdi-file-code-outline</v-icon>
-            <h3>No File Open</h3>
-            <p>Select a file from the Explorer panel to start coding</p>
-            <v-btn 
-              variant="outlined" 
-              @click="activePanel = 'explorer'"
-              class="open-explorer-btn"
-            >
-              <v-icon size="16" style="padding-right: 12px;">mdi-folder-open</v-icon>
-              Open Explorer
-            </v-btn>
-          </div>
-        </div>
-        
-        <!-- Bottom Panel -->
-        <div class="bottom-panel" v-show="showBottomPanel">
-          <div class="panel-header">
-            <div class="panel-tabs">
-              <div class="panel-tab active">
-                <v-icon size="16">mdi-console</v-icon>
-                <span>TERMINAL</span>
-              </div>
-            </div>
-            <v-icon size="16" @click="showBottomPanel = false">mdi-close</v-icon>
-          </div>
-          <div class="terminal-content">
-            <div class="terminal-line">
-              <span class="terminal-prompt">coderacer@terminal:~$</span>
-              <span class="terminal-command">stats --live</span>
-            </div>
-            <div class="terminal-output">
-              <div class="stat-output">
-                <span class="stat-label">Mode:</span> <span class="stat-value">{{ gameMode ? gameMode.toUpperCase() : 'NO FILE OPEN' }}</span>
-              </div>
-              <div class="stat-output">
-                <span class="stat-label">LOC/min:</span> <span class="stat-value stat-number">{{ gameMode ? locPerMinute : 0 }}</span>
-              </div>
-              <div class="stat-output">
-                <span class="stat-label">Accuracy:</span> <span class="stat-value stat-number">{{ gameMode ? accuracy : 100 }}%</span>
-              </div>
-              <div class="stat-output">
-                <span class="stat-label">Time:</span> <span class="stat-value">{{ gameMode ? formatTime(timeElapsed) : '0:00' }}</span>
-              </div>
-              <div class="stat-output">
-                <span class="stat-label">Completed:</span> <span class="stat-value stat-number">{{ gameMode ? wordsCompleted : 0 }}</span>
-              </div>
-              <div class="stat-output" v-if="gameMode && isGameActive">
-                <span class="stat-label">Status:</span> <span class="stat-value stat-success">● ACTIVE</span>
-              </div>
-              <div class="stat-output" v-else>
-                <span class="stat-label">Status:</span> <span class="stat-value stat-secondary">● READY</span>
-              </div>
-            </div>
-          </div>
-        </div>
+          <!-- Snippets Viewer in Main Editor -->
+          <SnippetsViewer v-if="gameMode === 'snippets'" @close="closeActiveTab" />
+          
+          <!-- Game Modes -->
+          <FreeCodeMode v-if="gameMode === 'free'" />
+          <SprintMode v-if="gameMode === 'sprint'" />
+          <ChallengeMode v-if="gameMode === 'challenge'" />
+        </EditorArea>
         
       </div>
     </div>
@@ -418,12 +119,17 @@ import { useGameStore } from '../stores/gameStore.js'
 import { useStatsStore } from '../stores/statsStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { useCurrentLanguage } from '../composables/useCurrentLanguage.js'
-import GlitchLogo from './GlitchLogo.vue'
-import ThemeSelector from './ThemeSelector.vue'
-import GameModeSelector from './GameModeSelector.vue'
+
+// Layout components
+import TitleBar from './layout/TitleBar.vue'
+import ActivityBar from './layout/ActivityBar.vue'
+import SidePanel from './layout/SidePanel.vue'
+import TabsBar from './layout/TabsBar.vue'
+import EditorArea from './layout/EditorArea.vue'
+
+// UI components
 import StatsBar from './StatsBar.vue'
 import GameOverOverlay from './GameOverOverlay.vue'
-import GameControls from './GameControls.vue'
 import SettingsPanel from './SettingsPanel.vue'
 import StatsPanel from './StatsPanel.vue'
 import InstructionsPanel from './InstructionsPanel.vue'
@@ -446,6 +152,7 @@ const timedGameDuration = ref(60) // 60 seconds for code
 const activePanel = ref('explorer') // Start with file explorer open
 const showSettingsPanel = ref(false)
 const showBottomPanel = ref(false)
+const instructionsOpen = ref(false)
 const openTabs = ref([]) // Start with no tabs - user can open files from explorer
 const activeTabIndex = ref(-1)
 let tabIdCounter = 0
@@ -1056,268 +763,13 @@ watch(() => settingsStore.languagePreference, (newPref) => {
   color: var(--text-secondary);
 }
 
-/* VS Code Title Bar */
-.title-bar {
-  background: var(--bg-primary);
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  user-select: none;
-  padding: 0 12px;
-}
-
-.title-bar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  height: 100%;
-  flex: 1;
-}
-
-.title-bar-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-}
-
-.title-bar-right {
-  padding: 0;
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-}
-
 /* VS Code Layout Styles */
 .vscode-layout {
   display: flex;
-  height: calc(100vh - 54px); /* 30px title bar + 24px status bar */
+  flex: 1;
   font-family: 'Fira Code', monospace;
-}
-
-/* Activity Bar (left sidebar) */
-.activity-bar {
-  width: 56px;
-  background: var(--bg-primary);
-  border-right: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0 48px 0; 
-  overflow-y: auto;
+  overflow: hidden;
   min-height: 0;
-}
-
-.activity-icons {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.activity-icon {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--text-secondary);
-}
-
-.activity-icon:hover, .activity-icon.active {
-  background: var(--bg-secondary);
-  color: var(--text-accent);
-}
-
-.activity-logo {
-  opacity: 0.5;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  position: relative;
-  flex-shrink: 0;
-  margin-top: 8px;
-}
-
-.activity-logo:hover {
-  opacity: 1;
-}
-
-.activity-logo .active {
-  opacity: 1;
-  color: var(--highlight) !important;
-}
-
-.settings-icon {
-  position: relative;
-}
-
-.settings-badge {
-  position: absolute;
-  bottom: -6px;
-  right: -6px;
-  width: 20px;
-  height: 20px;
-  background: #ffd700;
-  border-radius: 50%;
-  border: 2px solid var(--bg-primary);
-  animation: pulse-badge 2s ease-in-out infinite;
-}
-
-@keyframes pulse-badge {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.8;
-  }
-}
-
-/* Side Panel */
-.side-panel {
-  width: 240px;
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-}
-
-.panel-header {
-  height: 35px;
-  background: var(--bg-tertiary);
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 12px;
-}
-
-.panel-title {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  letter-spacing: 0.5px;
-}
-
-.panel-content {
-  flex: 1;
-  overflow-y: auto;
-}
-
-/* File Tree */
-.file-tree {
-  padding: 8px 0;
-}
-
-.file-item {
-  height: 22px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 12px;
-  cursor: pointer;
-  font-size: 13px;
-  color: var(--text-primary);
-  transition: background-color 0.2s ease;
-}
-
-.file-item:hover {
-  background: var(--bg-tertiary);
-}
-
-.file-item.active {
-  background: var(--highlight-bg);
-  color: var(--text-accent);
-}
-
-.file-icon {
-  flex-shrink: 0;
-}
-
-.file-separator {
-  height: 1px;
-  background: var(--border-color);
-  margin: 4px 12px;
-}
-
-/* Search Panel */
-.search-content {
-  padding: 12px;
-}
-
-.search-option {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-bottom: 8px;
-  transition: background-color 0.2s ease;
-}
-
-.search-option:hover {
-  background: var(--bg-tertiary);
-}
-
-.search-text {
-  flex: 1;
-}
-
-.search-title {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary);
-  margin-bottom: 2px;
-}
-
-.search-desc {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.search-divider {
-  height: 1px;
-  background: var(--border-color);
-  margin: 8px 12px;
-}
-
-/* Git Panel */
-.git-content {
-  padding: 12px;
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
-}
-
-.stats-section-title {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 16px;
-  margin-bottom: 8px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.stats-section-title:first-child {
-  margin-top: 0;
-}
-
-.stat-line {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 0;
-  font-size: 13px;
-  color: var(--text-primary);
 }
 
 /* Snippets Viewer */
@@ -1328,336 +780,37 @@ watch(() => settingsStore.languagePreference, (newPref) => {
   text-align: left;
 }
 
-.snippets-editor {
-  height: 100%;
-  overflow-y: auto;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 14px;
-  line-height: 1.4;
-  background: var(--vscode-editor-background);
-  text-align: left;
-}
-
-.code-lines {
-  padding: 20px 0;
-  text-align: left;
-}
-
-.code-line {
-  display: flex;
-  min-height: 1.375em;
-  padding: 0;
-  color: var(--vscode-editor-foreground);
-  text-align: left;
-}
-
-.line-number {
-  width: 50px;
-  padding: 0 1em 0 1em;
-  text-align: right;
-  color: var(--vscode-editorLineNumber-foreground);
-  background: var(--vscode-editorGutter-background);
-  user-select: none;
-  flex-shrink: 0;
-  font-size: 0.75em;
-  line-height: 1.375em;
-}
-
-.line-content {
-  padding: 0 1em;
-  white-space: pre;
-  flex: 1;
-  min-width: 0;
-  word-wrap: break-word;
-  line-height: 1.375em;
-  text-align: left;
-}
-
-.snippets-editor::-webkit-scrollbar {
-  width: 12px;
-}
-
-.snippets-editor::-webkit-scrollbar-track {
-  background: var(--vscode-scrollbar-shadow);
-}
-
-.snippets-editor::-webkit-scrollbar-thumb {
-  background: var(--vscode-scrollbarSlider-background);
-  border-radius: 6px;
-}
-
-.snippets-editor::-webkit-scrollbar-thumb:hover {
-  background: var(--vscode-scrollbarSlider-hoverBackground);
-}
-
-/* Bottom Panel */
-.bottom-panel {
-  height: 200px;
-  background: var(--bg-secondary);
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-}
-
-.panel-tabs {
-  display: flex;
-  gap: 1px;
-}
-
-.panel-tab {
-  height: 35px;
-  background: var(--bg-primary);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 12px;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-primary);
-  border-top: 2px solid transparent;
-}
-
-.panel-tab.active {
-  border-top-color: var(--text-accent);
-}
-
-.terminal-content {
-  flex: 1;
-  padding: 12px;
-  font-family: 'Fira Code', monospace;
-  font-size: 13px;
-  background: var(--bg-primary);
-  overflow-y: auto;
-}
-
-.terminal-line {
-  margin-bottom: 8px;
-}
-
-.terminal-prompt {
-  color: #4caf50;
-  font-weight: 500;
-}
-
-.terminal-command {
-  color: var(--text-accent);
-  margin-left: 8px;
-}
-
-.terminal-output {
-  margin-left: 16px;
-  margin-top: 8px;
-}
-
-.stat-output {
-  margin-bottom: 6px;
-  display: flex;
-  gap: 8px;
-}
-
-.stat-label {
-  color: var(--text-secondary);
-  min-width: 80px;
-}
-
-.stat-value {
-  color: var(--text-primary);
-}
-
-.stat-number {
-  color: var(--text-accent);
-  font-weight: 500;
-}
-
-.stat-success {
-  color: #4caf50;
-  font-weight: 500;
-}
-
-.stat-secondary {
-  color: var(--text-secondary);
-  font-weight: 400;
-}
-
-/* Tab Container */
-.tab-container {
-  display: flex;
-  height: 35px;
-}
-
-/* Individual File Tabs */
-.file-tab {
-  background: var(--bg-secondary);
-  height: 35px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 8px 0 12px;
-  border-bottom: 2px solid transparent;
-  border-right: 1px solid var(--border-color);
-  font-size: 13px;
-  color: var(--text-secondary);
-  cursor: move;
-  transition: all 0.2s ease;
-  max-width: 180px;
-  min-width: 120px;
-  position: relative;
-}
-
-.file-tab:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.file-tab.active {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  border-bottom-color: var(--text-accent);
-}
-
-.file-tab.drag-over {
-  border-left: 3px solid var(--text-accent);
-  background: var(--bg-tertiary);
-}
-
-.tab-drop-zone {
-  min-width: 40px;
-  height: 35px;
-  transition: all 0.2s ease;
-}
-
-.tab-drop-zone.drag-over {
-  background: var(--bg-tertiary);
-  border-left: 3px solid var(--text-accent);
-}
-
-.tab-filename {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Current File Tab - Legacy styles updated */
-.current-file-tab {
-  background: var(--bg-primary);
-  height: 35px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 8px 0 12px;
-  border-top: 2px solid var(--text-accent);
-  font-size: 13px;
-  color: var(--text-primary);
-  position: relative;
-  max-width: 200px;
-}
-
-.empty-tab {
-  background: var(--bg-secondary);
-  height: 35px;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  font-size: 13px;
-  color: var(--text-secondary);
-  font-style: italic;
-}
-
-.empty-text {
-  opacity: 0.7;
-}
-
-.file-type-icon {
-  color: var(--text-accent);
-  flex-shrink: 0;
-}
-
-.tab-close {
-  color: var(--text-secondary);
-  cursor: pointer;
-  border-radius: 3px;
-  padding: 2px;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-  opacity: 0.6;
-}
-
-.file-tab:hover .tab-close {
-  opacity: 1;
-}
-
-.file-tab.active .tab-close {
-  opacity: 0.8;
-}
-
-.tab-close:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  opacity: 1 !important;
-}
-
-.panel-toggle {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  color: var(--text-secondary);
-}
-
-.panel-toggle:hover {
-  background: var(--bg-primary);
-  color: var(--text-accent);
-}
-
 /* Editor Container */
 .editor-container {
   flex: 1;
   display: flex;
   flex-direction: column;
   background: var(--bg-secondary);
+  min-width: 0;
+  min-height: 0;
 }
 
-/* Tab Bar */
-.tab-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* Scrollbar styling for editor content */
+.editor-content::-webkit-scrollbar,
+.terminal-content::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.editor-content::-webkit-scrollbar-track,
+.terminal-content::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+.editor-content::-webkit-scrollbar-thumb,
+.terminal-content::-webkit-scrollbar-thumb {
   background: var(--bg-tertiary);
-  border-bottom: 1px solid var(--border-color);
-  height: 35px;
-  padding: 0;
+  border-radius: 5px;
 }
 
-.tab-left {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  height: 100%;
-  padding: 0;
-}
-
-.tab-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 12px;
-  height: 100%;
-}
-
-/* Editor Content */
-.editor-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  align-items: stretch;
-  justify-content: flex-start;
+.editor-content::-webkit-scrollbar-thumb:hover,
+.terminal-content::-webkit-scrollbar-thumb:hover {
+  background: var(--border-color);
 }
 
 .typing-game-wrapper {
@@ -1722,7 +875,6 @@ watch(() => settingsStore.languagePreference, (newPref) => {
   color: var(--text-primary);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   position: relative;
   overflow: hidden;
 }

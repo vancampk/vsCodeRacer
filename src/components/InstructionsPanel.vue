@@ -124,7 +124,8 @@
 
 <style scoped>
 .instructions-panel {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   color: var(--text-primary);
   background: var(--bg-primary);
@@ -272,19 +273,19 @@ kbd {
 
 /* Scrollbar styling */
 .instructions-panel::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 .instructions-panel::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
 }
 
 .instructions-panel::-webkit-scrollbar-thumb {
   background: var(--bg-tertiary);
-  border-radius: 5px;
+  border-radius: 6px;
 }
 
 .instructions-panel::-webkit-scrollbar-thumb:hover {
-  background: var(--border-color);
+  background: var(--text-secondary);
 }
 </style>

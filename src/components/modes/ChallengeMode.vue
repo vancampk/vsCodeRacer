@@ -36,11 +36,13 @@
 import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useGameStore } from '../../stores/gameStore'
 import { useStatsStore } from '../../stores/statsStore'
+import { useSettingsStore } from '../../stores/settingsStore'
 import { useCodeLines } from '../../composables/useCodeLines'
 import CodeEditor from '../shared/CodeEditor.vue'
 
 const gameStore = useGameStore()
 const statsStore = useStatsStore()
+const settingsStore = useSettingsStore()
 
 // Template refs
 const inputField = ref(null)

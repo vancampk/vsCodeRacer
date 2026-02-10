@@ -113,10 +113,7 @@ const formatTime = (seconds) => {
   height: 24px;
   padding: 0 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  flex-shrink: 0;
   z-index: 100;
 }
 
