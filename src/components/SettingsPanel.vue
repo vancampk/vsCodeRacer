@@ -14,11 +14,9 @@
           @change="settingsStore.setTheme(settingsStore.theme)"
           class="setting-select"
         >
-          <option value="vscode-dark">VS Code Dark</option>
-          <option value="vscode-light">VS Code Light</option>
-          <option value="dracula">Dracula</option>
-          <option value="github-dark">GitHub Dark</option>
-          <option value="shades-of-purple">Shades of Purple</option>
+          <option v-for="theme in themes" :key="theme.value" :value="theme.value">
+            {{ theme.name }}
+          </option>
         </select>
       </div>
       
@@ -29,20 +27,9 @@
           v-model="settingsStore.languagePreference"
           class="setting-select"
         >
-          <option value="all">All Languages</option>
-          <option value="css">CSS</option>
-          <option value="go">Go</option>
-          <option value="java">Java</option>
-          <option value="javascript">JavaScript</option>
-          <option value="nodejs">Node.js/Express</option>
-          <option value="python">Python</option>
-          <option value="react">React</option>
-          <option value="regex">Regex</option>
-          <option value="rust">Rust</option>
-          <option value="shell">Shell/Git/Docker</option>
-          <option value="sql">SQL</option>
-          <option value="typescript">TypeScript</option>
-          <option value="vue">Vue</option>
+          <option v-for="lang in languages" :key="lang.value" :value="lang.value">
+            {{ lang.name }}
+          </option>
         </select>
       </div>
       
@@ -81,6 +68,8 @@
 
 <script setup>
 import { useSettingsStore } from '../stores/settingsStore'
+import { themes } from '../data/themes.js'
+import { languages } from '../data/languages.js'
 
 const settingsStore = useSettingsStore()
 

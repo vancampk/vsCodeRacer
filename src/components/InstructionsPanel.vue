@@ -175,7 +175,6 @@
 .instruction-section p {
   line-height: 1.7;
   color: var(--text-primary);
-  text-align: left;
   margin-bottom: 12px;
 }
 
@@ -184,7 +183,6 @@
   line-height: 1.8;
   color: var(--text-primary);
   padding-left: 24px;
-  text-align: left;
 }
 
 .instruction-section li {

@@ -34,7 +34,6 @@ const snippetLines = computed(() => {
   display: flex;
   flex-direction: column;
   background: var(--vscode-editor-background);
-  text-align: left;
 }
 
 .snippets-editor {
@@ -45,12 +44,10 @@ const snippetLines = computed(() => {
   font-size: 14px;
   line-height: 1.4;
   background: var(--vscode-editor-background);
-  text-align: left;
 }
 
 .code-lines {
   padding: 20px 0;
-  text-align: left;
 }
 
 .code-line {
@@ -58,7 +55,6 @@ const snippetLines = computed(() => {
   min-height: 1.375em;
   padding: 0;
   color: var(--vscode-editor-foreground);
-  text-align: left;
 }
 
 .line-number {
@@ -80,7 +76,6 @@ const snippetLines = computed(() => {
   min-width: 0;
   word-wrap: break-word;
   line-height: 1.375em;
-  text-align: left;
 }
 
 .snippets-editor::-webkit-scrollbar {

@@ -307,27 +307,6 @@ const formatTime = (seconds) => {
   overflow-y: auto;
 }
 
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid var(--border-color);
-  position: sticky;
-  top: 0;
-  background: var(--editor-background);
-  z-index: 10;
-}
-
-.panel-header h2 {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-}
-
 .stats-content {
   padding: 20px;
 }

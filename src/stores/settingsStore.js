@@ -1,18 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { themes as themesList } from '../data/themes.js'
 
 export const useSettingsStore = defineStore('settings', () => {
   // Theme settings
   const selectedTheme = ref('vscode-dark')
   
-  const themes = ref([
-    { value: 'vscode-dark', name: 'VS Code Dark' },
-    { value: 'vscode-light', name: 'VS Code Light' },
-    { value: 'dracula', name: 'Dracula' },
-    { value: 'monokai', name: 'Monokai' },
-    { value: 'github-dark', name: 'GitHub Dark' },
-    { value: 'shades-of-purple', name: 'Shades of Purple' }
-  ])
+  const themes = ref(themesList)
   
   // User preferences
   const soundEnabled = ref(true)

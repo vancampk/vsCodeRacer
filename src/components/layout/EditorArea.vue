@@ -84,14 +84,12 @@ defineEmits(['open-explorer', 'close-bottom-panel'])
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  position: relative;
 }
 
 .editor-content {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  background: var(--bg-primary);
   display: flex;
   flex-direction: column;
 }

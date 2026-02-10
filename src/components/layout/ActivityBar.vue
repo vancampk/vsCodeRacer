@@ -53,10 +53,6 @@ defineEmits(['toggle-panel', 'open-tab'])
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  flex-shrink: 0;
-  min-height: 0;
 }
 
 .activity-icons {
@@ -114,17 +110,26 @@ defineEmits(['toggle-panel', 'open-tab'])
 
 .settings-badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 8px;
-  height: 8px;
-  background: #007ACC;
+  bottom: 8px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  background: #ccbe00;
   border-radius: 50%;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+  box-shadow: 0 0 4px rgba(204, 190, 0, 0.5),
+              0 0 8px rgba(204, 190, 0, 0.3);
+  animation: pulse-glow 3s ease-in-out infinite;
 }
 
-.settings-icon:hover .settings-badge {
-  opacity: 1;
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 4px rgba(204, 190, 0, 0.5),
+                0 0 8px rgba(204, 190, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 6px rgba(204, 190, 0, 0.7),
+                0 0 10px rgba(204, 190, 0, 0.4);
+  }
 }
+
 </style>

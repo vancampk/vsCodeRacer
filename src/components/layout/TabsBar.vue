@@ -212,7 +212,6 @@ const processedTabs = computed(() => {
   min-width: 120px;
   max-width: 200px;
   transition: background 0.15s ease;
-  position: relative;
 }
 
 .file-tab:hover {
@@ -259,7 +258,6 @@ const processedTabs = computed(() => {
 
 .tab-drop-zone {
   width: 40px;
-  flex-shrink: 0;
   transition: background 0.15s ease;
 }
 

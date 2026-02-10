@@ -10,7 +10,6 @@ const emit = defineEmits(['saveAndReset'])
 
 <style scoped>
 .controls {
-  text-align: center;
   display: flex;
   gap: 0.5rem;
   justify-content: center;

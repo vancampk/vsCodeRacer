@@ -131,7 +131,6 @@ watch(() => gameStore.gameMode, (newMode) => {
 <style scoped>
 .free-code-mode {
   height: 100%;
-  position: relative;
   display: flex;
   flex-direction: column;
 }

@@ -192,7 +192,6 @@ const formatGameMode = (mode) => {
   font-weight: 600;
 }
 
-/* Scrollbar styling */
 .terminal-content::-webkit-scrollbar {
   width: 10px;
   height: 10px;
