@@ -54,7 +54,8 @@ const {
   currentInput, 
   wordsToShow,
   initializeLines, 
-  checkLineComplete 
+  isLineComplete,
+  advanceToNextLine
 } = useCodeLines(100, 'shift', settingsStore.languagePreference, settingsStore.mixedLanguageMode)
 
 // Computed properties
@@ -89,13 +90,6 @@ const handleInput = (event) => {
   
   currentInput.value = input
   
-  // Check if line is complete and sync with game store
-  const wasCompleted = checkLineComplete(input)
-  if (wasCompleted) {
-    // Update main game store with the completed line count
-    gameStore.completedLinesCount = completedLinesCount.value
-  }
-  
   // End game when time runs out
   if (timeRemaining.value === 0 && gameStore.gameState === 'playing') {
     gameStore.finishGame()
@@ -110,6 +104,15 @@ const handleInput = (event) => {
 const handleKeyDown = (event) => {
   if (event.key === 'Tab') {
     event.preventDefault()
+  }
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    // Only advance if the current line is complete
+    if (isLineComplete(currentInput.value)) {
+      advanceToNextLine()
+      // Update main game store with the completed line count
+      gameStore.completedLinesCount = completedLinesCount.value
+    }
   }
   if (event.key === 'Escape') {
     event.preventDefault()

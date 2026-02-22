@@ -46,7 +46,8 @@ const {
   currentLanguage,
   wordsToShow,
   initializeLines, 
-  checkLineComplete 
+  isLineComplete,
+  advanceToNextLine
 } = useCodeLines(50, 'shift', settingsStore.languagePreference, settingsStore.mixedLanguageMode)
 
 // Handle input
@@ -71,19 +72,21 @@ const handleInput = (event) => {
   }
   
   currentInput.value = input
-  
-  // Check for line completion and sync with game store
-  const wasCompleted = checkLineComplete(input)
-  if (wasCompleted) {
-    // Update main game store with the completed line count
-    gameStore.completedLinesCount = completedLinesCount.value
-  }
 }
 
 // Handle key events
 const handleKeyDown = (event) => {
   if (event.key === 'Tab') {
     event.preventDefault()
+  }
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    // Only advance if the current line is complete
+    if (isLineComplete(currentInput.value)) {
+      advanceToNextLine()
+      // Update main game store with the completed line count
+      gameStore.completedLinesCount = completedLinesCount.value
+    }
   }
   if (event.key === 'Escape') {
     event.preventDefault()

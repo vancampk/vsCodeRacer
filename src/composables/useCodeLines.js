@@ -201,47 +201,49 @@ export function useCodeLines(initialCount = 50, mode = 'shift', languagePreferen
   }
 
   // Check if current line is complete
-  const checkLineComplete = (input) => {
+  const isLineComplete = (input) => {
     const currentLineIndex = mode === 'shift' ? 0 : completedLinesCount.value
+    if (currentLineIndex >= codeLines.value.length) return false
     const currentLine = codeLines.value[currentLineIndex]
     const trimmedLine = currentLine.trimStart()
-    
-    if (input === trimmedLine) {
-      if (mode === 'shift') {
-        // Shift mode: remove first line and add new line
-        codeLines.value.shift()
-        currentLineLanguages.value.shift()
-        
-        if (mixedLanguageMode) {
-          const randomLineData = getRandomLineFromAnyLanguage()
-          // Strip leading spaces in mixed mode
-          const cleanLine = randomLineData.line.trimStart()
-          codeLines.value.push(cleanLine)
-          currentLineLanguages.value.push(randomLineData.language)
-        } else {
-          // Add a new block's worth of lines using the current language
-          const blocks = getBlocksForLanguage(languagePreference)
-          const randomBlock = blocks[Math.floor(Math.random() * blocks.length)]
-          const blockLines = randomBlock.split('\n')
-          codeLines.value.push(...blockLines)
-          for (let i = 0; i < blockLines.length; i++) {
-            currentLineLanguages.value.push(currentLanguage.value)
-          }
-        }
-        
-        completedLinesCount.value++
+    return input === trimmedLine
+  }
+
+  // Advance to next line (only called when Enter is pressed)
+  const advanceToNextLine = () => {
+    if (mode === 'shift') {
+      // Shift mode: remove first line and add new line
+      codeLines.value.shift()
+      currentLineLanguages.value.shift()
+      
+      if (mixedLanguageMode) {
+        const randomLineData = getRandomLineFromAnyLanguage()
+        // Strip leading spaces in mixed mode
+        const cleanLine = randomLineData.line.trimStart()
+        codeLines.value.push(cleanLine)
+        currentLineLanguages.value.push(randomLineData.language)
       } else {
-        // Scroll mode: move to next line
-        completedLinesCount.value++
+        // Add a new block's worth of lines using the current language
+        const blocks = getBlocksForLanguage(languagePreference)
+        const randomBlock = blocks[Math.floor(Math.random() * blocks.length)]
+        const blockLines = randomBlock.split('\n')
+        codeLines.value.push(...blockLines)
+        for (let i = 0; i < blockLines.length; i++) {
+          currentLineLanguages.value.push(currentLanguage.value)
+        }
       }
-      currentInput.value = ''
       
-      // Auto-skip any blank lines after completing this line
-      skipBlankLines()
-      
-      return true
+      completedLinesCount.value++
+    } else {
+      // Scroll mode: move to next line
+      completedLinesCount.value++
     }
-    return false
+    currentInput.value = ''
+    
+    // Auto-skip any blank lines after completing this line
+    skipBlankLines()
+    
+    return true
   }
 
   return {
@@ -252,6 +254,7 @@ export function useCodeLines(initialCount = 50, mode = 'shift', languagePreferen
     currentLineLanguages,
     wordsToShow,
     initializeLines,
-    checkLineComplete
+    isLineComplete,
+    advanceToNextLine
   }
 }

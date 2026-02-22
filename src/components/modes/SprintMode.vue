@@ -56,7 +56,8 @@ const {
   currentLanguage,
   wordsToShow,
   initializeLines, 
-  checkLineComplete 
+  isLineComplete,
+  advanceToNextLine
 } = useCodeLines(10, 'scroll', settingsStore.languagePreference, settingsStore.mixedLanguageMode)
 
 // Computed properties
@@ -86,29 +87,30 @@ const handleInput = (event) => {
   }
   
   currentInput.value = input
-  
-  // Check if line is complete
-  const completed = checkLineComplete(input)
-  
-  // Sync with main game store when line completed
-  if (completed) {
-    gameStore.completedLinesCount = completedLinesCount.value
-  }
-  
-  // End game when 10 lines are completed
-  if (completed && completedLinesCount.value >= 10) {
-    gameStore.finishGame()
-    
-    // Save session stats
-    const finalStats = statsStore.calculateFinalStats(gameStore.timer, completedLinesCount.value)
-    statsStore.saveSession(finalStats)
-  }
 }
 
 // Handle key events
 const handleKeyDown = (event) => {
   if (event.key === 'Tab') {
     event.preventDefault()
+  }
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    // Only advance if the current line is complete
+    if (isLineComplete(currentInput.value)) {
+      advanceToNextLine()
+      // Sync with main game store when line completed
+      gameStore.completedLinesCount = completedLinesCount.value
+      
+      // End game when 10 lines are completed
+      if (completedLinesCount.value >= 10) {
+        gameStore.finishGame()
+        
+        // Save session stats
+        const finalStats = statsStore.calculateFinalStats(gameStore.timer, completedLinesCount.value)
+        statsStore.saveSession(finalStats)
+      }
+    }
   }
   if (event.key === 'Escape') {
     event.preventDefault()
