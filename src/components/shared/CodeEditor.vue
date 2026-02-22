@@ -262,6 +262,7 @@ const getCodeCharType = (char) => {
   position: relative;
   padding: 20px;
   overflow: hidden;
+  text-align: left;
 }
 
 .word-item {
@@ -271,6 +272,10 @@ const getCodeCharType = (char) => {
   height: 22px;
   line-height: 22px;
   color: var(--vscode-editor-foreground);
+  text-align: left;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .current-word {
@@ -287,16 +292,25 @@ const getCodeCharType = (char) => {
 
 .current-word-input {
   position: relative;
+  width: 100%;
+  text-align: left;
+  display: block;
 }
 
 .code-line {
   font-family: var(--vscode-editor-fontFamily);
   font-size: var(--vscode-editor-fontSize);
   white-space: pre;
+  text-align: left;
+  display: inline-block;
+  width: 100%;
 }
 
 .code-char {
   position: relative;
+  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+  font-size: 1em;
+  transition: all 0.15s ease;
 }
 
 .code-char.auto-indent {
@@ -305,31 +319,100 @@ const getCodeCharType = (char) => {
 
 .code-char.space-char:not(.auto-indent)::before {
   content: '·';
-  color: var(--vscode-editor-lineNumbers-foreground);
+  color: rgba(128, 128, 128, 0.08);
   position: absolute;
 }
 
 .code-char.correct {
-  background-color: var(--vscode-editor-selectionBackground);
-  color: var(--vscode-editor-foreground);
+  background: rgba(46, 125, 50, 0.3);
+  color: var(--success-text);
+  border-radius: 2px;
 }
 
 .code-char.incorrect {
-  background-color: var(--vscode-errorForeground);
-  color: white;
+  background: rgba(244, 67, 54, 0.3);
+  color: var(--error-text);
+  border-radius: 2px;
+  animation: code-shake 0.3s ease;
 }
 
-.code-char.pending {
-  background-color: var(--vscode-editor-cursor-background);
-  color: var(--vscode-editor-foreground);
+.code-char.current {
+  background: rgba(86, 156, 214, 0.3);
+  border-radius: 2px;
+  position: relative;
+  animation: blink 1s infinite;
+}
+
+.code-char.current::after {
+  position: absolute;
+  right: -1px;
+  top: 0;
+  color: var(--text-accent);
+  animation: cursor-blink 1s infinite;
+  font-weight: bold;
+}
+
+.completion-indicator {
+  color: #4caf50;
+  font-weight: bold;
+  margin-left: 4px;
+  animation: completion-flash 0.5s ease;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes code-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+}
+
+@keyframes completion-flash {
+  0% { opacity: 0; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 /* Syntax highlighting */
-.code-char.punctuation { color: var(--vscode-editor-punctuation); }
-.code-char.string { color: var(--vscode-editor-string); }
-.code-char.number { color: var(--vscode-editor-number); }
-.code-char.type { color: var(--vscode-editor-type); }
-.code-char.identifier { color: var(--vscode-editor-identifier); }
-.code-char.operator { color: var(--vscode-editor-operator); }
+.code-char.punctuation { color: var(--vscode-editor-foreground); }
+.code-char.string { color: #ce9178; }
+.code-char.number { color: #b5cea8; }
+.code-char.type { color: #4ec9b0; }
+.code-char.identifier { color: #9cdcfe; }
+.code-char.operator { color: var(--vscode-editor-foreground); }
 .code-char.default { color: var(--vscode-editor-foreground); }
+
+/* Theme-specific syntax highlighting */
+:global(.theme-vscode-light) .code-char.string { color: #a31515; }
+:global(.theme-vscode-light) .code-char.number { color: #098658; }
+:global(.theme-vscode-light) .code-char.type { color: #267f99; }
+:global(.theme-vscode-light) .code-char.identifier { color: #001080; }
+
+:global(.theme-dracula) .code-char.string { color: #f1fa8c; }
+:global(.theme-dracula) .code-char.number { color: #bd93f9; }
+:global(.theme-dracula) .code-char.type { color: #8be9fd; }
+:global(.theme-dracula) .code-char.identifier { color: #50fa7b; }
+
+:global(.theme-monokai) .code-char.string { color: #e6db74; }
+:global(.theme-monokai) .code-char.number { color: #ae81ff; }
+:global(.theme-monokai) .code-char.type { color: #66d9ef; }
+:global(.theme-monokai) .code-char.identifier { color: #a6e22e; }
+
+:global(.theme-github-dark) .code-char.string { color: #a5d6ff; }
+:global(.theme-github-dark) .code-char.number { color: #79c0ff; }
+:global(.theme-github-dark) .code-char.type { color: #7ee787; }
+:global(.theme-github-dark) .code-char.identifier { color: #ffa657; }
+
+:global(.theme-shades-of-purple) .code-char.string { color: #f8c555; }
+:global(.theme-shades-of-purple) .code-char.number { color: #ff6ac1; }
+:global(.theme-shades-of-purple) .code-char.type { color: #9effff; }
+:global(.theme-shades-of-purple) .code-char.identifier { color: #fad000; }
 </style>
