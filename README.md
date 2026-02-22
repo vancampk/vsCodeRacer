@@ -2,6 +2,8 @@
 
 A modern code typing game built with Vue 3 that helps developers improve their typing speed and accuracy by practicing with real code snippets.
 
+https://vancampk.github.io/vsCodeRacer/
+
 ## 🎮 Game Modes
 
 ### 10 Line Sprint
