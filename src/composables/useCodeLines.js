@@ -12,6 +12,7 @@ import { GO_BLOCKS } from '../data/blocks/goBlocks.js'
 import { RUST_BLOCKS } from '../data/blocks/rustBlocks.js'
 import { JAVA_BLOCKS } from '../data/blocks/javaBlocks.js'
 import { REGEX_BLOCKS } from '../data/blocks/regexBlocks.js'
+import { PERL_BLOCKS } from '../data/blocks/perlBlocks.js'
 
 const LANGUAGE_BLOCKS = {
   javascript: JAVASCRIPT_BLOCKS,
@@ -26,7 +27,8 @@ const LANGUAGE_BLOCKS = {
   go: GO_BLOCKS,
   rust: RUST_BLOCKS,
   java: JAVA_BLOCKS,
-  regex: REGEX_BLOCKS
+  regex: REGEX_BLOCKS,
+  perl: PERL_BLOCKS
 }
 
 const ALL_LANGUAGES = Object.keys(LANGUAGE_BLOCKS)

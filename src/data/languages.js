@@ -5,6 +5,7 @@ export const languages = [
   { value: 'java', name: 'Java', icon: 'mdi-language-java', extension: 'java' },
   { value: 'javascript', name: 'JavaScript', icon: 'mdi-language-javascript', extension: 'js' },
   { value: 'nodejs', name: 'Node.js/Express', icon: 'mdi-nodejs', extension: 'js' },
+  { value: 'perl', name: 'Perl', icon: 'mdi-language-perl', extension: 'pl' },
   { value: 'python', name: 'Python', icon: 'mdi-language-python', extension: 'py' },
   { value: 'react', name: 'React', icon: 'mdi-react', extension: 'jsx' },
   { value: 'regex', name: 'Regex', icon: 'mdi-regex', extension: 'regex' },

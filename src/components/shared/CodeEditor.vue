@@ -138,6 +138,7 @@ const getLanguageAbbreviation = (language) => {
     'react': 'RX',
     'vue': 'VU',
     'python': 'PY',
+    'perl': 'PL',
     'css': 'CS',
     'sql': 'SQ',
     'nodejs': 'ND',
