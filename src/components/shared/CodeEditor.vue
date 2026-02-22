@@ -63,8 +63,18 @@
             >
               {{ letterIndex < currentInput.length ? (currentInput[letterIndex] === ' ' ? '·' : currentInput[letterIndex]) : (letter === ' ' ? '·' : letter) }}
             </span>
+            <!-- Extra characters typed beyond the expected line -->
+            <span 
+              v-for="extraIndex in Math.max(0, currentInput.length - wordItem.trimmedWord.length)"
+              :key="'extra-' + extraIndex"
+              :class="['code-char', 'incorrect', 'extra-char']"
+            >
+              {{ currentInput[wordItem.trimmedWord.length + extraIndex - 1] === ' ' ? '·' : currentInput[wordItem.trimmedWord.length + extraIndex - 1] }}
+            </span>
             <!-- Show completion indicator when word is fully typed correctly -->
-            <span v-if="currentInput.length === wordItem.trimmedWord.length && currentInput === wordItem.trimmedWord" class="completion-indicator">✓</span>
+            <span v-if="currentInput.length === wordItem.trimmedWord.length && currentInput === wordItem.trimmedWord" class="completion-indicator">
+              <span class="enter-icon">⏎</span>
+            </span>
           </span>
         </div>
         <!-- Other words (non-current) -->
@@ -336,6 +346,12 @@ const getCodeCharType = (char) => {
   animation: code-shake 0.3s ease;
 }
 
+.code-char.extra-char {
+  background: rgba(244, 67, 54, 0.5);
+  text-decoration: underline wavy rgba(244, 67, 54, 0.8);
+  text-underline-offset: 2px;
+}
+
 .code-char.current {
   background: rgba(86, 156, 214, 0.3);
   border-radius: 2px;
@@ -353,10 +369,26 @@ const getCodeCharType = (char) => {
 }
 
 .completion-indicator {
-  color: #4caf50;
   font-weight: bold;
   margin-left: 4px;
   animation: completion-flash 0.5s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.check-mark {
+  color: #4caf50;
+}
+
+.enter-icon {
+  color: #2196f3;
+  font-size: 0.9em;
+  padding: 2px 4px;
+  background: rgba(33, 150, 243, 0.1);
+  border-radius: 3px;
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  animation: pulse-enter 1.5s ease-in-out infinite;
 }
 
 @keyframes blink {
@@ -379,6 +411,17 @@ const getCodeCharType = (char) => {
   0% { opacity: 0; transform: scale(0.8); }
   50% { opacity: 1; transform: scale(1.1); }
   100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse-enter {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.4);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+  }
 }
 
 /* Syntax highlighting */

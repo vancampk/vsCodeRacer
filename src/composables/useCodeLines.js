@@ -103,10 +103,22 @@ export function useCodeLines(initialCount = 50, mode = 'shift', languagePreferen
       while (lines.length < targetCount) {
         const randomBlock = blocks[Math.floor(Math.random() * blocks.length)]
         const blockLines = randomBlock.split('\n')
-        lines.push(...blockLines)
-        // Fill language tracking array for consistency
-        for (let i = 0; i < blockLines.length; i++) {
-          lineLanguages.push(currentLanguage.value)
+        
+        // In scroll mode, filter out blank lines to ensure exact count of typeable lines
+        if (mode === 'scroll') {
+          for (const line of blockLines) {
+            const trimmedLine = line.trimStart()
+            if (trimmedLine.length > 0) {
+              lines.push(line)
+              lineLanguages.push(currentLanguage.value)
+            }
+          }
+        } else {
+          // In shift mode, keep blank lines as they appear naturally in code
+          lines.push(...blockLines)
+          for (let i = 0; i < blockLines.length; i++) {
+            lineLanguages.push(currentLanguage.value)
+          }
         }
       }
       currentLineLanguages.value = lineLanguages.slice(0, targetCount)
@@ -119,8 +131,10 @@ export function useCodeLines(initialCount = 50, mode = 'shift', languagePreferen
     completedLinesCount.value = 0
     currentInput.value = ''
     
-    // Auto-skip any leading blank lines
-    skipBlankLines()
+    // Auto-skip any leading blank lines (mainly for shift mode)
+    if (mode === 'shift') {
+      skipBlankLines()
+    }
   }
 
   // Computed: words to show in the editor (current + context)
@@ -234,14 +248,14 @@ export function useCodeLines(initialCount = 50, mode = 'shift', languagePreferen
       }
       
       completedLinesCount.value++
+      
+      // Auto-skip any blank lines after completing this line (shift mode only)
+      skipBlankLines()
     } else {
-      // Scroll mode: move to next line
+      // Scroll mode: move to next line (no blank line skipping needed as they're filtered during init)
       completedLinesCount.value++
     }
     currentInput.value = ''
-    
-    // Auto-skip any blank lines after completing this line
-    skipBlankLines()
     
     return true
   }
