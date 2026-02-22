@@ -43,11 +43,14 @@ const snippetLines = computed(() => {
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
   font-size: 14px;
   line-height: 1.4;
+  align-items: flex-start;
   background: var(--vscode-editor-background);
 }
 
 .code-lines {
   padding: 20px 0;
+  text-align: left;
+  width: 100%;
 }
 
 .code-line {
